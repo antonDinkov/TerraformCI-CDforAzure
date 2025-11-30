@@ -4,10 +4,6 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "4.54.0"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = "3.7.2"
-    }
   }
   backend "azurerm" {
     resource_group_name = "rganton49245"
@@ -17,25 +13,18 @@ terraform {
   }
 }
 
-provider "random" {}
-
 provider "azurerm" {
   features {}
   subscription_id = "07428d78-50fc-42a4-8a54-05d6c5db739e"
 }
 
-resource "random_integer" "suffix" {
-  min = 10000
-  max = 99000
-}
-
 resource "azurerm_resource_group" "antonrg" {
-  name     = "${var.resource_group_name}${random_integer.suffix.result}"
+  name     = var.resource_group_name}
   location = var.resource_group_location
 }
 
 resource "azurerm_service_plan" "antonsp" {
-  name                = "${var.app_service_plan_name}${random_integer.suffix.result}"
+  name                = var.app_service_plan_name
   resource_group_name = azurerm_resource_group.antonrg.name
   location            = azurerm_resource_group.antonrg.location
   os_type             = "Linux"
@@ -43,7 +32,7 @@ resource "azurerm_service_plan" "antonsp" {
 }
 
 resource "azurerm_mssql_server" "antonserver" {
-  name                         = "${var.sql_server_name}${random_integer.suffix.result}"
+  name                         = var.sql_server_name
   resource_group_name          = azurerm_resource_group.antonrg.name
   location                     = azurerm_resource_group.antonrg.location
   version                      = "12.0"
@@ -52,7 +41,7 @@ resource "azurerm_mssql_server" "antonserver" {
 }
 
 resource "azurerm_mssql_database" "database" {
-  name                 = "${var.sql_database_name}${random_integer.suffix.result}"
+  name                 = var.sql_database_name
   server_id            = azurerm_mssql_server.antonserver.id
   collation            = "SQL_Latin1_General_CP1_CI_AS"
   license_type         = "LicenseIncluded"
@@ -68,14 +57,14 @@ resource "azurerm_mssql_database" "database" {
 }
 
 resource "azurerm_mssql_firewall_rule" "antonfw" {
-  name             = "${var.firewall_rule_name}${random_integer.suffix.result}"
+  name             = var.firewall_rule_name
   server_id        = azurerm_mssql_server.antonserver.id
   start_ip_address = "0.0.0.0"
   end_ip_address   = "0.0.0.0"
 }
 
 resource "azurerm_linux_web_app" "antonwa" {
-  name                = "${var.app_service_name}${random_integer.suffix.result}"
+  name                = var.app_service_name
   resource_group_name = azurerm_resource_group.antonrg.name
   location            = azurerm_service_plan.antonsp.location
   service_plan_id     = azurerm_service_plan.antonsp.id
