@@ -75,6 +75,9 @@ jobs:
       with:
         name: terraform-plan   # трябва да съвпада с името от upload
         path: .                # къде да се запише (текуща директория)
+
+    - name: List files after download
+        run: ls -la
   
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
