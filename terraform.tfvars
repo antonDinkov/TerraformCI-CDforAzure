@@ -1,5 +1,5 @@
 # Resource Group
-resource_group_name     = "rganton"
+resource_group_name     = "rganton49245"
 resource_group_location = "Poland Central"
 
 # App Service Plan & Web App
